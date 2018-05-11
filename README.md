@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	bot := telegrambot.NewBot(os.Getenv("TELEGRAM_TOKEN"), "DBMS: ")
+	bot := telegrambot.NewBot(os.Getenv("TELEGRAM_TOKEN"), "Prefix: ")
 	_, err := bot.SendMessage(os.Getenv("CHAT_ID_NOTIFY"), "Start application successfully")
 	if err != nil {
 		log.Printf("%s: %s\n", time.Now().Format(os.Getenv("LOG_TIME_FORMAT")), err.Error())
