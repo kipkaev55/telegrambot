@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -25,7 +26,10 @@ type Bot struct {
 	Duration float64
 }
 
-var markers map[string]time.Time
+var (
+	markers      map[string]time.Time
+	mutexMarkers sync.RWMutex
+)
 
 func NewBot(token, prefix string, durations ...float64) *Bot {
 	duration := 3.0
@@ -38,6 +42,7 @@ func NewBot(token, prefix string, durations ...float64) *Bot {
 
 // SendMessage sending message to client or chat
 func (b Bot) SendMessage(chatID string, text ...string) (bool, error) {
+	mutexMarkers.Lock()
 	var marker, message string
 	if len(text) > 1 {
 		marker = text[0]
@@ -51,6 +56,7 @@ func (b Bot) SendMessage(chatID string, text ...string) (bool, error) {
 	} else {
 		markers[marker] = time.Now()
 	}
+	mutexMarkers.Unlock()
 	if canSend {
 		message = strings.Trim(fmt.Sprint(text), "[]")
 		var err error
