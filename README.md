@@ -1,3 +1,4 @@
+# Simple telegram bot message sender
 ### How to use
 ```js
 package main
