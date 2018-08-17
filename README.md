@@ -1,4 +1,4 @@
-# Simple telegram bot message sender
+# Simple Golang telegram bot
 ### How to use
 ```js
 package main
