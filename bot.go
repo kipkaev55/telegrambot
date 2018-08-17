@@ -43,15 +43,21 @@ func NewBot(token, prefix string, durations ...float64) *Bot {
 // SendMessage sending message to client or chat
 func (b Bot) SendMessage(chatID string, text ...string) (bool, error) {
 	mutexMarkers.Lock()
-	var marker, message string
+	var (
+		marker, message string
+		m               time.Time
+		ok              bool
+	)
 	if len(text) > 1 {
 		marker = text[0]
 		text = append(text[:0], text[1:]...)
 	}
 	canSend := true
-	if m, ok := markers[marker]; ok {
+	if m, ok = markers[marker]; ok {
 		if b.Duration > time.Now().Sub(m).Seconds() {
 			canSend = false
+		} else {
+			markers[marker] = time.Now()
 		}
 	} else {
 		markers[marker] = time.Now()
@@ -90,5 +96,5 @@ func (b Bot) SendMessage(chatID string, text ...string) (bool, error) {
 		defer resp.Body.Close()
 		return success, err
 	}
-	return false, errors.New("Sending messages too often")
+	return false, errors.New(fmt.Sprintf("Sending messages too often. Last message was %.2f seconds ago. Period sending is %.2f", time.Now().Sub(m).Seconds(), b.Duration))
 }
